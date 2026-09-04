@@ -1,0 +1,63 @@
+# --- Build artifacts ---
+build/
+build-*/
+*.exe
+*.dll
+*.pdb
+*.obj
+*.o
+*.lib
+*.a
+*.so
+*.dylib
+*.ilk
+*.exp
+*.pch
+
+# --- IDE / editor ---
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+CMakeUserPresets.json
+CMakeSettings.json
+
+# --- Session / agent state ---
+.commandcode/
+memory.md
+history.md
+agent.md
+SKILL.md
+
+# --- Local runtime data ---
+edge_monitor.db
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+vectors.json
+*.log
+*.txt
+
+# --- Scratch files ---
+scratch_*
+*-scratch*
+scratch/
+
+# --- Edge browser test profiles (private: cookies, wallets, logins) ---
+edge-monitor-profile/
+edge-test-profile/
+edge-test-profile2/
+edge-*-profile*/
+
+# --- Vendored third-party binaries (fetch/download instead) ---
+third_party/
+models/
+
+# --- Python caches ---
+__pycache__/
+*.pyc
+
+# --- OCR / other binaries ---
+*.onnx
