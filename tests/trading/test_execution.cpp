@@ -65,7 +65,7 @@ int main() {
     CHECK(pos.size() == 1, "buy filled -> one position");
     if (!pos.empty()) {
         CHECK(std::fabs(pos[0].quantity - 0.5) < 1e-9, "position quantity 0.5 BTC");
-        CHECK(pos[0].side == 0 || true, "position exists");
+        CHECK(pos[0].quantity > 0.0, "buy yields positive (long) quantity");
     }
     auto openOrders = paper.getOpenOrders();
     CHECK(openOrders.empty(), "filled order no longer open");

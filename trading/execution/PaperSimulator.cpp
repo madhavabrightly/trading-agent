@@ -202,7 +202,7 @@ void PaperSimulator::onMarketTick(const MarketTick& tick) {
         }
 
         // Fill any ACKNOWLEDGED market/limit orders for this symbol.
-        for (auto& [id, o] : orders_) {
+        for (auto& [clientId, o] : orders_) {
             if (o.symbol != tick.symbol) continue;
             if (o.status != OrderStatus::ACKNOWLEDGED &&
                 o.status != OrderStatus::PARTIALLY_FILLED)
@@ -217,21 +217,21 @@ void PaperSimulator::onMarketTick(const MarketTick& tick) {
             price = o.side == Side::BUY ? price + slip : price - slip;
             double remaining = o.requestedQuantity - o.filledQuantity;
             if (remaining <= 0.0) continue;
-            fills.push_back({o.orderId, price});
+            fills.push_back({clientId, price});  // key by clientOrderId
             break;  // one fill per symbol per tick (simple model)
         }
     }
     // Apply fills outside the lock (still single-threaded here).
-    for (const auto& [orderId, price] : fills) {
+    for (const auto& [clientId, price] : fills) {
         std::lock_guard<std::mutex> lock(mutex_);
-        auto it = orders_.find(orderId);
+        auto it = orders_.find(clientId);
         if (it == orders_.end()) continue;
         auto& o = it->second;
         if (o.status != OrderStatus::ACKNOWLEDGED &&
             o.status != OrderStatus::PARTIALLY_FILLED)
             continue;
         double remaining = o.requestedQuantity - o.filledQuantity;
-        applyFill(orderId, price, remaining, OrderStatus::FILLED);
+        applyFill(clientId, price, remaining, OrderStatus::FILLED);
     }
 }
 

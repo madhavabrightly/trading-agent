@@ -26,17 +26,20 @@ public:
     //   any pre-ack -> FAILED / REJECTED
     //   any -> UNKNOWN (reconciliation required)
     bool transition(OrderStatus next, std::string& error) {
-        if (!isAllowed(state_, next)) {
-            error = "invalid order transition " + std::string(toString(state_)) +
-                    " -> " + toString(next);
+        if (state_ == next) {
+            error = std::string("order already in state ") + toString(next);
             return false;
         }
-        // Acknowledge-before-terminal rule: never jump straight to a terminal
-        // state from CREATED/SUBMITTED without an ACKNOWLEDGED in between,
-        // except explicit broker rejection/failure reports.
+        // Acknowledge-before-terminal rule: never jump straight to a broker-
+        // terminal state (FILLED/CANCELLED) from a pre-ack state.
         if (requiresAck(state_, next)) {
             error = std::string("order requires ACKNOWLEDGED before ") +
                     toString(next);
+            return false;
+        }
+        if (!isAllowed(state_, next)) {
+            error = "invalid order transition " +
+                    std::string(toString(state_)) + " -> " + toString(next);
             return false;
         }
         state_ = next;
